@@ -1,6 +1,7 @@
 package First_task;
 
 import org.junit.Test;
+
 public class Tests {
     @Test
     public void customerAlreadyHasAccount(){
@@ -58,4 +59,5 @@ public class Tests {
         Account acc = new Account(0);
         assert acc.add(0) == false;
     }
+
 }

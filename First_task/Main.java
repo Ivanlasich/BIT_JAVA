@@ -5,7 +5,7 @@ public class Main {
         // write your code here
         System.out.println("Hello word");
         Customer example;
-        example = new Customer("John", "Goodman");
-        System.out.println(example.withdrawFromCurrentAccount(22));
+        example = new Customer("  ", "joj");
+        System.out.println(example.fullName());
     }
 }
