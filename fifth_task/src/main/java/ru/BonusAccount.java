@@ -1,16 +1,19 @@
-package Second_task;
+package main.java.ru;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.TreeSet;
 
-public class DebitCard implements Account {
+
+public class BonusAccount implements Account {
     private final long id;
+
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
     private final TransactionManager transactionManager;
     private final Entries entries;
-    private HashMap<Account, Integer> mostFrequent;
+    private double bonus = 0.1;
 
     public long getId() {
         return id;
@@ -20,21 +23,25 @@ public class DebitCard implements Account {
         return entries;
     }
 
-    public DebitCard(long id, TransactionManager transactionManager) {
+    public BonusAccount(long id, TransactionManager transactionManager, double bonus) {
         this.id = id;
         this.transactionManager = transactionManager;
         this.entries = new Entries();
-        this.mostFrequent = new HashMap<Account, Integer>();
+        this.bonus = bonus;
     }
 
-    public HashMap<Account, Integer> getMostFrequent() {
-        return mostFrequent;
+    public BonusAccount(long id, TransactionManager transactionManager) {
+        this.id = id;
+        this.transactionManager = transactionManager;
+        this.entries = new Entries();
+        this.bonus = 0.01;
     }
 
-    public DebitCard(long id) {
+    public BonusAccount(long id) {
         this.id = id;
         this.transactionManager = null;
         this.entries = null;
+        this.bonus = 0.0;
     }
 
     /**
@@ -46,9 +53,8 @@ public class DebitCard implements Account {
      * otherwise returns false
      */
     public boolean withdraw(double amount, Account beneficiary) {
-        // write your code here
-        double balance = this.entries.getSumEntries();
-        if (amount > 0 && (balance - amount) > 0){
+        double balance = this.balanceOn(LocalDateTime.MIN);
+        if (amount > 0 && (balance - amount) > 0) {
             Transaction transaction = this.transactionManager.createTransaction(-amount, this, beneficiary);
             this.transactionManager.executeTransaction(transaction);
             return true;
@@ -66,9 +72,8 @@ public class DebitCard implements Account {
      * otherwise returns false
      */
     public boolean withdrawCash(double amount) {
-        // write your code here
-        double balance = this.entries.getSumEntries();
-        if (amount > 0 && (balance - amount) > 0){
+        double balance = this.balanceOn(LocalDateTime.MIN);
+        if (amount > 0 && (balance - amount) > 0) {
             Account plug = new DebitCard(-1, null);
             Transaction transaction = this.transactionManager.createTransaction(-amount, this, plug);
             this.transactionManager.executeTransaction(transaction);
@@ -86,8 +91,7 @@ public class DebitCard implements Account {
      * otherwise returns false
      */
     public boolean addCash(double amount) {
-        // write your code here
-        if (amount > 0){
+        if (amount > 0) {
             Account plug = new DebitCard(-1, null);
             Transaction transaction = this.transactionManager.createTransaction(amount, this, plug);
             this.transactionManager.executeTransaction(transaction);
@@ -105,8 +109,7 @@ public class DebitCard implements Account {
      * otherwise returns false
      */
     public boolean add(double amount, Account beneficiary) {
-        // write your code here
-        if (amount > 0){
+        if (amount > 0) {
             Transaction transaction = this.transactionManager.createTransaction(amount, this, beneficiary);
             this.transactionManager.executeTransaction(transaction);
             return true;
@@ -115,20 +118,19 @@ public class DebitCard implements Account {
     }
 
     public Collection<Entry> history(LocalDateTime from, LocalDateTime to) {
-        // write your code here
         return this.entries.betweenDates(from, to);
     }
 
     /**
      * Calculates balance on the accounting entries basis
+     *
      * @param date
      * @return balance
      */
     public double balanceOn(LocalDateTime date) {
-        // write your code here
         Collection<Entry> list = this.entries.from(date);
         double sum = 0;
-        for (Entry i:list) {
+        for (Entry i : list) {
             sum += i.getAmount();
         }
         return sum;
@@ -138,22 +140,22 @@ public class DebitCard implements Account {
      * Finds the last transaction of the account and rollbacks it
      */
     public void rollbackLastTransaction() {
-        // write your code here
         Entry entry = this.entries.last();
         this.transactionManager.rollbackTransaction(entry.getTransaction());
-
     }
 
-    public void addEntry(Entry entry){
+    public void addEntry(Entry entry) {
         this.entries.addEntry(entry);
     }
 
-    public double accountBalance(){
-        double sum = 0;
-        TreeSet<Entry> tree = entries.getListForAnalitics();
-        for (Entry i:tree) {
-            sum += i.getAmount();
+    public double getBonus() {
+        double answer = 0.0;
+        Entries entries = ((BonusAccount) this).getEntries();
+        for (Entry entry : entries.betweenDates(LocalDateTime.MIN, LocalDateTime.MAX)) {
+            if (entry.getAmount() < 0 && entry.getTransaction().getBeneficiary().getId() != -1) {
+                answer += entry.getAmount();
+            }
         }
-        return sum;
+        return -answer * bonus;
     }
 }

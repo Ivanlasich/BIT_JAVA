@@ -1,9 +1,7 @@
-package Second_task;
-
-
+package main.java.ru;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Objects;
+
 
 public class Transaction implements Comparable<Transaction>{
     private final long id;

@@ -1,10 +1,9 @@
-package Second_task;
+package main.java.ru;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
+
 
 public class Entry implements Comparable<Entry> {
-
     private final Account account;
     private final Transaction transaction;
     private final double amount;
@@ -18,21 +17,20 @@ public class Entry implements Comparable<Entry> {
         return transaction;
     }
 
-    public LocalDateTime getTime(){
+    public LocalDateTime getTime() {
         return time;
     }
 
-    public Entry(Account account, Transaction transaction, double amount, LocalDateTime time){
+    public Entry(Account account, Transaction transaction, double amount, LocalDateTime time) {
         this.account = account;
         this.transaction = transaction;
         this.amount = amount;
         this.time = time;
     }
 
-
     @Override
     public int compareTo(Entry o) {
-        if(this.time.compareTo(o.getTime()) == 0){
+        if (this.time.compareTo(o.getTime()) == 0) {
             return 1;
         }
         return this.time.compareTo(o.getTime());
@@ -45,5 +43,4 @@ public class Entry implements Comparable<Entry> {
         Entry entry = (Entry) o;
         return Double.compare(entry.amount, amount) == 0;
     }
-
 }
